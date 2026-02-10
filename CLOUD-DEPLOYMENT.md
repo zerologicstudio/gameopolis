@@ -15,10 +15,10 @@ This guide shows you how to deploy the Gameopolis backend to a cloud platform wi
 
 | Platform | Free Tier | MongoDB | Difficulty |
 |----------|-----------|---------|------------|
-| **Render** | ✅ Yes | ✅ Yes | Easy |
-| **Railway** | ✅ Yes | ✅ Yes | Easy |
-| **Vercel** | ✅ Yes | ❌ No | Medium |
-| **Heroku** | ❌ No | ✅ Yes | Medium |
+| **Render** | ✅ Yes | ✅ Atlas | Easy |
+| **Railway** | ✅ Yes | ✅ Built-in | Easy |
+| **Vercel** | ✅ Yes | ✅ Atlas | Medium |
+| **Heroku** | ❌ No | ✅ Atlas | Medium |
 
 ---
 
@@ -93,22 +93,62 @@ FRONTEND_URL=https://your-frontend-url.vercel.app
 
 6. Click **"Create Web Service"**
 
-### Step 5: Add MongoDB
+### Step 5: Add MongoDB Atlas
 
-1. In your Render dashboard, click **"New +"**
-2. Select **"PostgreSQL"** (or **"MongoDB"** if available)
-3. Name it: `gameopolis-db`
-4. Select **Free** tier
-5. Click **"Create Database"**
+Since Render doesn't have built-in MongoDB, we'll use MongoDB Atlas (free cloud database).
 
-6. After creation, click on the database
-7. Copy the **Internal Database URL**
+#### 5a. Create MongoDB Atlas Account
 
-8. Go back to your web service
-9. Click **"Environment"**
-10. Add: `MONGODB_URI=paste-your-database-url-here`
+1. Go to [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+2. Click **"Try Free"** or **"Register"**
+3. Sign up with your email
 
-11. Click **"Save Changes"**
+#### 5b. Create Free Cluster
+
+1. After logging in, click **"Build a Database"**
+2. Select **"M0 Sandbox"** (Free tier - 512MB storage)
+3. Choose a cloud provider and region (closest to India: **AWS Mumbai**)
+4. Name your cluster: `gameopolis-cluster`
+5. Click **"Create Cluster"**
+6. Wait for cluster to be created (2-5 minutes)
+
+#### 5c. Create Database User
+
+1. Click **"Database Access"** in the left sidebar
+2. Click **"Add New Database User"**
+3. Choose **"Password"** authentication
+4. Enter username: `gameopolis`
+5. Enter a strong password (save this!)
+6. Click **"Create User"**
+
+#### 5d. Whitelist IP Address
+
+1. Click **"Network Access"** in the left sidebar
+2. Click **"Add IP Address"**
+3. Choose **"Allow Access from Anywhere"** (adds `0.0.0.0/0`)
+4. Click **"Confirm"**
+
+#### 5e. Get Connection String
+
+1. Click **"Database"** in the left sidebar
+2. Click **"Connect"** button on your cluster
+3. Choose **"Connect your application"**
+4. Select **Node.js** and version **4.1 or later**
+5. Copy the connection string
+
+It will look like:
+```
+mongodb+srv://<username>:<password>@gameopolis-cluster.xxxxx.mongodb.net/?retryWrites=true&w=majority
+```
+
+#### 5f. Add MongoDB URI to Render
+
+1. Go back to your Render web service
+2. Click **"Environment"**
+3. Add: `MONGODB_URI=mongodb+srv://gameopolis:YOUR_PASSWORD@gameopolis-cluster.xxxxx.mongodb.net/gameopolis?retryWrites=true&w=majority`
+4. Replace `YOUR_PASSWORD` with your MongoDB password
+5. Replace the cluster URL with your actual cluster URL
+6. Click **"Save Changes"**
 
 ### Step 6: Get Your API URL
 

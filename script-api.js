@@ -7,7 +7,7 @@
    // ============================================
 
 // API Base URL - Change this to your deployed backend URL
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://gameopolis-api.onrender.com';
 // For production, use your actual backend URL:
 // const API_BASE_URL = 'https://gameopolis-api.onrender.com/api';
 

@@ -67,13 +67,10 @@ app.use((err, req, res, next) => {
 });
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/gameopolis', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/gameopolis')
 .then(async () => {
     console.log('✅ Connected to MongoDB');
-    
+
     // Seed initial data if collections are empty
     await seedInitialData();
 })
