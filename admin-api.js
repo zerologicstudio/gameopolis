@@ -568,7 +568,7 @@ async function loadGallery() {
 
         galleryGrid.innerHTML = gallery.map(image => `
             <div class="gallery-item-card">
-                <img src="${image.url}" alt="${image.alt}">
+                <img src="${image.url}" alt="${image.alt}" crossorigin="anonymous">
                 <div class="gallery-item-overlay">
                     <span class="gallery-category">${image.category}</span>
                     <div class="gallery-item-actions">
