@@ -3,7 +3,7 @@
    ============================================ */
 
 // API Base URL - Change this to your deployed backend URL
-const API_BASE_URL = 'https://gameopolis-api.onrender.com';
+const API_BASE_URL = 'https://gameopolis-api.onrender.com/api';
 // For production, use your actual backend URL:
 // const API_BASE_URL = 'https://gameopolis-api.onrender.com/api';
 
@@ -709,7 +709,7 @@ function initializeModals() {
     });
 
     // Menu modal
-    document.getElementById('add-menu-btn').addEventListener('click', function() {
+    document.getElementById('add-menu-item-btn').addEventListener('click', function() {
         document.getElementById('menu-modal-title').textContent = 'Add New Menu Item';
         document.getElementById('menu-form').reset();
         document.getElementById('menu-item-id').value = '';
