@@ -118,12 +118,16 @@ function handleNavigation(e) {
     document.querySelectorAll('.admin-section').forEach(section => {
         section.classList.remove('active');
     });
-    const targetElement = document.getElementById(targetSection);
+
+    // Build the section ID (append -section if not already present)
+    const sectionId = targetSection.includes('-section') ? targetSection : `${targetSection}-section`;
+    const targetElement = document.getElementById(sectionId);
+
     if (targetElement) {
         targetElement.classList.add('active');
-        console.log('Section made active:', targetSection);
+        console.log('Section made active:', sectionId);
     } else {
-        console.error('Section not found:', targetSection);
+        console.error('Section not found:', sectionId);
     }
 
     // Update page title
