@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Gameopolis</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="img/logo.png" alt="Gameopolis Logo" class="login-logo">
+                <h2>Admin Login</h2>
+                <p>Gameopolis Management Panel</p>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="admin-username">Username</label>
+                    <input type="text" id="admin-username" name="username" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" name="password" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <p class="login-error" id="login-error"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel (Hidden by default) -->
+    <div id="admin-panel" class="admin-panel" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <img src="img/logo.png" alt="Gameopolis Logo" class="sidebar-logo">
+                <h3>Admin Panel</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#events" class="nav-link" data-section="events">
+                    <i class="fas fa-calendar-alt"></i> Events
+                </a>
+                <a href="#bookings" class="nav-link" data-section="bookings">
+                    <i class="fas fa-book"></i> Bookings
+                </a>
+                <a href="#menu" class="nav-link" data-section="menu">
+                    <i class="fas fa-utensils"></i> Menu
+                </a>
+                <a href="#gallery" class="nav-link" data-section="gallery">
+                    <i class="fas fa-images"></i> Gallery
+                </a>
+                <a href="#settings" class="nav-link" data-section="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> View Website
+                </a>
+                <button id="logout-btn" class="btn btn-outline">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="header-left">
+                    <button id="sidebar-toggle" class="sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="admin-info">
+                        <i class="fas fa-user-shield"></i>
+                        <span id="admin-name">Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="admin-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Events</h3>
+                            <p class="stat-number" id="total-events">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Bookings</h3>
+                            <p class="stat-number" id="total-bookings">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Pending Bookings</h3>
+                            <p class="stat-number" id="pending-bookings">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Gallery Images</h3>
+                            <p class="stat-number" id="total-images">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="recent-bookings">
+                        <h3><i class="fas fa-clock"></i> Recent Bookings</h3>
+                        <div class="bookings-list" id="recent-bookings-list">
+                            <p class="no-data">No recent bookings</p>
+                        </div>
+                    </div>
+                    <div class="upcoming-events">
+                        <h3><i class="fas fa-calendar"></i> Upcoming Events</h3>
+                        <div class="events-list" id="upcoming-events-list">
+                            <p class="no-data">No upcoming events</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Events Section -->
+            <section id="events-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Manage Events</h2>
+                    <button id="add-event-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New Event
+                    </button>
+                </div>
+                <div class="events-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-table-body">
+                            <tr>
+                                <td colspan="8" class="no-data">No events found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Bookings Section -->
+            <section id="bookings-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Manage Bookings</h2>
+                    <div class="filter-buttons">
+                        <button class="btn btn-sm btn-primary" data-filter="all">All</button>
+                        <button class="btn btn-sm btn-secondary" data-filter="pending">Pending</button>
+                        <button class="btn btn-sm btn-secondary" data-filter="confirmed">Confirmed</button>
+                        <button class="btn btn-sm btn-secondary" data-filter="cancelled">Cancelled</button>
+                    </div>
+                </div>
+                <div class="bookings-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Players</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-table-body">
+                            <tr>
+                                <td colspan="8" class="no-data">No bookings found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Menu Section -->
+            <section id="menu-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Manage Menu</h2>
+                    <button id="add-menu-item-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Menu Item
+                    </button>
+                </div>
+                <div class="menu-categories">
+                    <div class="menu-category-section">
+                        <h3><i class="fas fa-coffee"></i> Hot Beverages</h3>
+                        <div class="menu-items-list" id="hot-beverages-list">
+                            <p class="no-data">No items</p>
+                        </div>
+                    </div>
+                    <div class="menu-category-section">
+                        <h3><i class="fas fa-glass-water"></i> Cold Beverages</h3>
+                        <div class="menu-items-list" id="cold-beverages-list">
+                            <p class="no-data">No items</p>
+                        </div>
+                    </div>
+                    <div class="menu-category-section">
+                        <h3><i class="fas fa-cookie-bite"></i> Snacks</h3>
+                        <div class="menu-items-list" id="snacks-list">
+                            <p class="no-data">No items</p>
+                        </div>
+                    </div>
+                    <div class="menu-category-section">
+                        <h3><i class="fas fa-pizza-slice"></i> Quick Meals</h3>
+                        <div class="menu-items-list" id="quick-meals-list">
+                            <p class="no-data">No items</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gallery Section -->
+            <section id="gallery-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Manage Gallery</h2>
+                    <button id="add-image-btn" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Upload Image
+                    </button>
+                </div>
+                <div class="gallery-grid" id="admin-gallery-grid">
+                    <p class="no-data">No images in gallery</p>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Settings</h2>
+                </div>
+                <div class="settings-container">
+                    <div class="setting-card">
+                        <h3><i class="fas fa-user-shield"></i> Admin Credentials</h3>
+                        <form id="admin-credentials-form">
+                            <div class="form-group">
+                                <label for="current-password">Current Password</label>
+                                <input type="password" id="current-password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">New Password</label>
+                                <input type="password" id="new-password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">Confirm New Password</label>
+                                <input type="password" id="confirm-password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Password</button>
+                        </form>
+                    </div>
+                    <div class="setting-card">
+                        <h3><i class="fas fa-info-circle"></i> Contact Information</h3>
+                        <form id="contact-info-form">
+                            <div class="form-group">
+                                <label for="contact-phone">Phone Number</label>
+                                <input type="tel" id="contact-phone" value="+91 98765 43210">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">Email</label>
+                                <input type="email" id="contact-email" value="info@gameopolis.in">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-address">Address</label>
+                                <textarea id="contact-address" rows="3">123, Usman Road, T-Nagar, Chennai, Tamil Nadu 600017</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Contact Info</button>
+                        </form>
+                    </div>
+                    <div class="setting-card">
+                        <h3><i class="fas fa-clock"></i> Operating Hours</h3>
+                        <form id="hours-form">
+                            <div class="form-group">
+                                <label for="opening-time">Opening Time</label>
+                                <input type="time" id="opening-time" value="11:00">
+                            </div>
+                            <div class="form-group">
+                                <label for="closing-time">Closing Time</label>
+                                <input type="time" id="closing-time" value="22:00">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Hours</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="event-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="event-modal-title">Add New Event</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="event-form" class="modal-body">
+                <input type="hidden" id="event-id">
+                <div class="form-group">
+                    <label for="event-name">Event Name *</label>
+                    <input type="text" id="event-name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="event-date">Date *</label>
+                        <input type="date" id="event-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-time">Time *</label>
+                        <input type="time" id="event-time" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="event-duration">Duration (hours) *</label>
+                    <input type="number" id="event-duration" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-type">Event Type *</label>
+                    <select id="event-type" required>
+                        <option value="tournament">Tournament</option>
+                        <option value="casual">Casual Night</option>
+                        <option value="themed">Themed Event</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="event-price">Price per Person (₹) *</label>
+                    <input type="number" id="event-price" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-capacity">Capacity *</label>
+                    <input type="number" id="event-capacity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-description">Description *</label>
+                    <textarea id="event-description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="event-image">Image URL</label>
+                    <input type="url" id="event-image" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Menu Item Modal -->
+    <div id="menu-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="menu-modal-title">Add Menu Item</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="menu-form" class="modal-body">
+                <input type="hidden" id="menu-item-id">
+                <div class="form-group">
+                    <label for="menu-item-name">Item Name *</label>
+                    <input type="text" id="menu-item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="menu-item-price">Price (₹) *</label>
+                    <input type="number" id="menu-item-price" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="menu-item-category">Category *</label>
+                    <select id="menu-item-category" required>
+                        <option value="hot-beverages">Hot Beverages</option>
+                        <option value="cold-beverages">Cold Beverages</option>
+                        <option value="snacks">Snacks</option>
+                        <option value="quick-meals">Quick Meals</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Upload Modal -->
+    <div id="image-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Gallery Image</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="image-form" class="modal-body">
+                <div class="form-group">
+                    <label for="image-url">Image URL *</label>
+                    <input type="url" id="image-url" required placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label for="image-category">Category *</label>
+                    <select id="image-category" required>
+                        <option value="interior">Interior</option>
+                        <option value="games">Board Games</option>
+                        <option value="tables">Gaming Tables</option>
+                        <option value="experience">Customer Experience</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="image-alt">Alt Text</label>
+                    <input type="text" id="image-alt" placeholder="Description of the image">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload Image</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- External JavaScript -->
+    <script src="admin.js"></script>
+</body>
+</html>
