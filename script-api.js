@@ -79,7 +79,7 @@ async function loadEventsFromAdmin() {
             return `
                 <div class="event-card" data-type="${event.type}">
                     <div class="event-image">
-                        <img src="${event.image}" alt="${event.name} Event at Gameopolis" loading="lazy">
+                        <img src="${event.image}" alt="${event.name} Event at Gameopolis" loading="lazy" crossorigin="anonymous">
                         <div class="event-date">
                             <span class="event-month">${month}</span>
                             <span class="event-day">${day}</span>
@@ -138,7 +138,7 @@ async function loadGalleryFromAdmin() {
 
         galleryGrid.innerHTML = galleryImages.map(image => `
             <div class="gallery-item" data-category="${image.category}">
-                <img src="${image.url}" alt="${image.alt}" loading="lazy">
+                <img src="${image.url}" alt="${image.alt}" loading="lazy" crossorigin="anonymous">
                 <div class="gallery-overlay">
                     <i class="fas fa-search-plus"></i>
                 </div>
@@ -541,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = document.getElementById('email').value.trim();
             const date = document.getElementById('date').value;
             const time = document.getElementById('time').value;
-            const players = document.getElementById('booking-players').value;
+            const players = document.getElementById('players').value;
             const notes = document.getElementById('notes').value.trim();
 
             // Validation
@@ -591,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
     quickBookingBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             const players = this.getAttribute('data-players');
-            const playersInput = document.getElementById('booking-players');
+            const playersInput = document.getElementById('players');
             if (playersInput) {
                 playersInput.value = players;
             }
