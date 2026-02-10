@@ -167,29 +167,30 @@ async function loadDashboard() {
         const totalMenuItems = Object.values(menuData.menu).flat().length;
         const totalGalleryImages = galleryData.gallery.length;
 
-        document.getElementById('stat-events').textContent = activeEvents;
-        document.getElementById('stat-bookings').textContent = pendingBookings;
-        document.getElementById('stat-menu').textContent = totalMenuItems;
-        document.getElementById('stat-gallery').textContent = totalGalleryImages;
+        document.getElementById('total-events').textContent = activeEvents;
+        document.getElementById('total-bookings').textContent = bookingsData.bookings.length;
+        document.getElementById('pending-bookings').textContent = pendingBookings;
+        document.getElementById('total-images').textContent = totalGalleryImages;
 
         // Load recent bookings
         const recentBookings = bookingsData.bookings.slice(0, 5);
-        const recentBookingsTable = document.getElementById('recent-bookings-table');
+        const recentBookingsList = document.getElementById('recent-bookings-list');
 
         if (recentBookings.length === 0) {
-            recentBookingsTable.innerHTML = '<tr><td colspan="6">No recent bookings</td></tr>';
+            recentBookingsList.innerHTML = '<p class="no-data">No recent bookings</p>';
         } else {
-            recentBookingsTable.innerHTML = recentBookings.map(booking => `
-                <tr>
-                    <td>${booking.bookingId}</td>
-                    <td>${booking.name}</td>
-                    <td>${booking.date}</td>
-                    <td>${booking.players}</td>
-                    <td><span class="status-badge status-${booking.status}">${booking.status}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-primary" onclick="viewBooking('${booking.bookingId}')">View</button>
-                    </td>
-                </tr>
+            recentBookingsList.innerHTML = recentBookings.map(booking => `
+                <div class="booking-item">
+                    <div class="booking-info">
+                        <h4>${booking.name}</h4>
+                        <p><strong>ID:</strong> ${booking.bookingId}</p>
+                        <p><strong>Date:</strong> ${booking.date}</p>
+                        <p><strong>Players:</strong> ${booking.players}</p>
+                    </div>
+                    <div class="booking-status">
+                        <span class="status-badge status-${booking.status}">${booking.status}</span>
+                    </div>
+                </div>
             `).join('');
         }
 
@@ -199,21 +200,20 @@ async function loadDashboard() {
             .sort((a, b) => new Date(a.date) - new Date(b.date))
             .slice(0, 5);
 
-        const upcomingEventsTable = document.getElementById('upcoming-events-table');
+        const upcomingEventsList = document.getElementById('upcoming-events-list');
 
         if (upcomingEvents.length === 0) {
-            upcomingEventsTable.innerHTML = '<tr><td colspan="5">No upcoming events</td></tr>';
+            upcomingEventsList.innerHTML = '<p class="no-data">No upcoming events</p>';
         } else {
-            upcomingEventsTable.innerHTML = upcomingEvents.map(event => `
-                <tr>
-                    <td>${event.name}</td>
-                    <td>${new Date(event.date).toLocaleDateString()}</td>
-                    <td>${event.registered}/${event.capacity}</td>
-                    <td>₹${event.price}</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary" onclick="editEvent('${event._id}')">Edit</button>
-                    </td>
-                </tr>
+            upcomingEventsList.innerHTML = upcomingEvents.map(event => `
+                <div class="event-item">
+                    <div class="event-info">
+                        <h4>${event.name}</h4>
+                        <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
+                        <p><strong>Registered:</strong> ${event.registered}/${event.capacity}</p>
+                        <p><strong>Price:</strong> ₹${event.price}</p>
+                    </div>
+                </div>
             `).join('');
         }
     } catch (error) {
@@ -735,7 +735,7 @@ function initializeForms() {
     document.getElementById('event-form').addEventListener('submit', handleEventSubmit);
     document.getElementById('menu-form').addEventListener('submit', handleMenuSubmit);
     document.getElementById('image-form').addEventListener('submit', handleImageSubmit);
-    document.getElementById('settings-form').addEventListener('submit', handleSettingsSubmit);
+    // Settings forms are handled separately
 }
 
 function initializeFilters() {
