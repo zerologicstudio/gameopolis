@@ -250,7 +250,12 @@ async function loadEvents() {
     try {
         const data = await apiRequest('/events');
         const events = data.events || [];
-        const eventsTable = document.getElementById('events-table');
+        const eventsTable = document.getElementById('events-table-body');
+
+        if (!eventsTable) {
+            console.error('Events table body not found');
+            return;
+        }
 
         if (events.length === 0) {
             eventsTable.innerHTML = '<tr><td colspan="7">No events found</td></tr>';
@@ -365,7 +370,12 @@ async function loadBookings() {
     try {
         const data = await apiRequest('/bookings');
         const bookings = data.bookings || [];
-        const bookingsTable = document.getElementById('bookings-table');
+        const bookingsTable = document.getElementById('bookings-table-body');
+
+        if (!bookingsTable) {
+            console.error('Bookings table body not found');
+            return;
+        }
 
         if (bookings.length === 0) {
             bookingsTable.innerHTML = '<tr><td colspan="8">No bookings found</td></tr>';
@@ -432,39 +442,39 @@ async function loadMenu() {
         const data = await apiRequest('/menu');
         const menu = data.menu || {};
         const categories = {
-            'hot-beverages': { icon: 'fa-coffee', title: 'Hot Beverages' },
-            'cold-beverages': { icon: 'fa-glass-water', title: 'Cold Beverages' },
-            'snacks': { icon: 'fa-cookie-bite', title: 'Snacks' },
-            'quick-meals': { icon: 'fa-pizza-slice', title: 'Quick Meals' }
+            'hot-beverages': { listId: 'hot-beverages-list', icon: 'fa-coffee', title: 'Hot Beverages' },
+            'cold-beverages': { listId: 'cold-beverages-list', icon: 'fa-glass-water', title: 'Cold Beverages' },
+            'snacks': { listId: 'snacks-list', icon: 'fa-cookie-bite', title: 'Snacks' },
+            'quick-meals': { listId: 'quick-meals-list', icon: 'fa-pizza-slice', title: 'Quick Meals' }
         };
 
-        let menuHTML = '';
-
         for (const [categoryKey, categoryInfo] of Object.entries(categories)) {
+            const listElement = document.getElementById(categoryInfo.listId);
+            if (!listElement) {
+                console.error(`Menu list not found: ${categoryInfo.listId}`);
+                continue;
+            }
+
             const items = menu[categoryKey] || [];
 
-            menuHTML += `
-                <div class="menu-category-section">
-                    <h4><i class="fas ${categoryInfo.icon}"></i> ${categoryInfo.title}</h4>
-                    <div class="menu-items-grid">
-                        ${items.map(item => `
-                            <div class="menu-item-card">
-                                <div class="menu-item-info">
-                                    <h5>${item.name}</h5>
-                                    <p class="menu-item-price">₹${item.price}</p>
-                                </div>
-                                <div class="menu-item-actions">
-                                    <button class="btn btn-sm btn-primary" onclick="editMenuItem('${item._id}', '${categoryKey}')">Edit</button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteMenuItem('${item._id}', '${categoryKey}')">Delete</button>
-                                </div>
-                            </div>
-                        `).join('')}
+            if (items.length === 0) {
+                listElement.innerHTML = '<p class="no-data">No items</p>';
+                continue;
+            }
+
+            listElement.innerHTML = items.map(item => `
+                <div class="menu-item-card">
+                    <div class="menu-item-info">
+                        <h5>${item.name}</h5>
+                        <p class="menu-item-price">₹${item.price}</p>
+                    </div>
+                    <div class="menu-item-actions">
+                        <button class="btn btn-sm btn-primary" onclick="editMenuItem('${item._id}', '${categoryKey}')">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteMenuItem('${item._id}', '${categoryKey}')">Delete</button>
                     </div>
                 </div>
-            `;
+            `).join('');
         }
-
-        document.getElementById('menu-container').innerHTML = menuHTML;
     } catch (error) {
         console.error('Error loading menu:', error);
         showToast('Error loading menu', 'error');
@@ -544,10 +554,15 @@ async function loadGallery() {
     try {
         const data = await apiRequest('/gallery');
         const gallery = data.gallery || [];
-        const galleryGrid = document.getElementById('gallery-grid');
+        const galleryGrid = document.getElementById('admin-gallery-grid');
+
+        if (!galleryGrid) {
+            console.error('Gallery grid not found');
+            return;
+        }
 
         if (gallery.length === 0) {
-            galleryGrid.innerHTML = '<p>No images in gallery yet.</p>';
+            galleryGrid.innerHTML = '<p class="no-data">No images in gallery</p>';
             return;
         }
 
@@ -616,17 +631,21 @@ async function loadSettings() {
         const data = await apiRequest('/settings');
         const settings = data.settings;
 
-        document.getElementById('settings-phone').value = settings.phone || '';
-        document.getElementById('settings-email').value = settings.email || '';
-        document.getElementById('settings-address').value = settings.address || '';
-        document.getElementById('settings-opening-time').value = settings.openingTime || '';
-        document.getElementById('settings-closing-time').value = settings.closingTime || '';
-        document.getElementById('settings-instagram').value = settings.socialMedia?.instagram || '';
-        document.getElementById('settings-facebook').value = settings.socialMedia?.facebook || '';
-        document.getElementById('settings-twitter').value = settings.socialMedia?.twitter || '';
-        document.getElementById('settings-wednesday-price').value = settings.pricing?.wednesday || '';
-        document.getElementById('settings-weekday-price').value = settings.pricing?.weekday || '';
-        document.getElementById('settings-weekend-price').value = settings.pricing?.weekend || '';
+        // Contact Information
+        const contactPhone = document.getElementById('contact-phone');
+        const contactEmail = document.getElementById('contact-email');
+        const contactAddress = document.getElementById('contact-address');
+
+        if (contactPhone) contactPhone.value = settings.phone || '+91 98765 43210';
+        if (contactEmail) contactEmail.value = settings.email || 'info@gameopolis.in';
+        if (contactAddress) contactAddress.value = settings.address || '123, Usman Road, T-Nagar, Chennai, Tamil Nadu 600017';
+
+        // Operating Hours
+        const openingTime = document.getElementById('opening-time');
+        const closingTime = document.getElementById('closing-time');
+
+        if (openingTime) openingTime.value = settings.openingTime || '11:00';
+        if (closingTime) closingTime.value = settings.closingTime || '22:00';
     } catch (error) {
         console.error('Error loading settings:', error);
         showToast('Error loading settings', 'error');
@@ -636,23 +655,39 @@ async function loadSettings() {
 async function handleSettingsSubmit(e) {
     e.preventDefault();
 
-    const settingsData = {
-        phone: document.getElementById('settings-phone').value,
-        email: document.getElementById('settings-email').value,
-        address: document.getElementById('settings-address').value,
-        openingTime: document.getElementById('settings-opening-time').value,
-        closingTime: document.getElementById('settings-closing-time').value,
-        socialMedia: {
-            instagram: document.getElementById('settings-instagram').value,
-            facebook: document.getElementById('settings-facebook').value,
-            twitter: document.getElementById('settings-twitter').value
-        },
-        pricing: {
-            wednesday: parseInt(document.getElementById('settings-wednesday-price').value),
-            weekday: parseInt(document.getElementById('settings-weekday-price').value),
-            weekend: parseInt(document.getElementById('settings-weekend-price').value)
+    // Get the form that was submitted
+    const form = e.target;
+    const formId = form.id;
+
+    let settingsData = {};
+
+    // Handle different forms based on form ID
+    if (formId === 'contact-info-form') {
+        settingsData = {
+            phone: document.getElementById('contact-phone').value,
+            email: document.getElementById('contact-email').value,
+            address: document.getElementById('contact-address').value
+        };
+    } else if (formId === 'hours-form') {
+        settingsData = {
+            openingTime: document.getElementById('opening-time').value,
+            closingTime: document.getElementById('closing-time').value
+        };
+    } else if (formId === 'admin-credentials-form') {
+        // Handle password change separately
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (newPassword !== confirmPassword) {
+            showToast('Passwords do not match', 'error');
+            return;
         }
-    };
+
+        // Password change would need a separate API endpoint
+        showToast('Password change feature coming soon', 'info');
+        return;
+    }
 
     try {
         await apiRequest('/settings', {
@@ -661,6 +696,7 @@ async function handleSettingsSubmit(e) {
         });
 
         showToast('Settings updated successfully!', 'success');
+        form.reset();
     } catch (error) {
         console.error('Error updating settings:', error);
         showToast('Error updating settings', 'error');
@@ -755,7 +791,21 @@ function initializeForms() {
     document.getElementById('event-form').addEventListener('submit', handleEventSubmit);
     document.getElementById('menu-form').addEventListener('submit', handleMenuSubmit);
     document.getElementById('image-form').addEventListener('submit', handleImageSubmit);
-    // Settings forms are handled separately
+
+    // Settings forms
+    const adminCredentialsForm = document.getElementById('admin-credentials-form');
+    const contactInfoForm = document.getElementById('contact-info-form');
+    const hoursForm = document.getElementById('hours-form');
+
+    if (adminCredentialsForm) {
+        adminCredentialsForm.addEventListener('submit', handleSettingsSubmit);
+    }
+    if (contactInfoForm) {
+        contactInfoForm.addEventListener('submit', handleSettingsSubmit);
+    }
+    if (hoursForm) {
+        hoursForm.addEventListener('submit', handleSettingsSubmit);
+    }
 }
 
 function initializeFilters() {
@@ -766,7 +816,7 @@ function initializeFilters() {
             this.classList.add('active');
 
             const filter = this.getAttribute('data-filter');
-            const rows = document.querySelectorAll('#bookings-table tr');
+            const rows = document.querySelectorAll('#bookings-table-body tr');
 
             rows.forEach(row => {
                 if (filter === 'all' || row.querySelector(`.status-${filter}`)) {
