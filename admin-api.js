@@ -104,6 +104,8 @@ function handleNavigation(e) {
     e.preventDefault();
     const targetSection = this.getAttribute('data-section');
 
+    console.log('Navigating to section:', targetSection);
+
     if (!targetSection) return;
 
     // Update active link
@@ -119,6 +121,9 @@ function handleNavigation(e) {
     const targetElement = document.getElementById(targetSection);
     if (targetElement) {
         targetElement.classList.add('active');
+        console.log('Section made active:', targetSection);
+    } else {
+        console.error('Section not found:', targetSection);
     }
 
     // Update page title
@@ -128,27 +133,30 @@ function handleNavigation(e) {
         pageTitleElement.textContent = sectionTitle;
     }
 
-    // Load section data
-    switch(targetSection) {
-        case 'dashboard':
-            loadDashboard();
-            break;
-        case 'events':
-            loadEvents();
-            break;
-        case 'bookings':
-            loadBookings();
-            break;
-        case 'menu':
-            loadMenu();
-            break;
-        case 'gallery':
-            loadGallery();
-            break;
-        case 'settings':
-            loadSettings();
-            break;
-    }
+    // Load section data after a small delay to ensure section is visible
+    setTimeout(() => {
+        console.log('Loading data for section:', targetSection);
+        switch(targetSection) {
+            case 'dashboard':
+                loadDashboard();
+                break;
+            case 'events':
+                loadEvents();
+                break;
+            case 'bookings':
+                loadBookings();
+                break;
+            case 'menu':
+                loadMenu();
+                break;
+            case 'gallery':
+                loadGallery();
+                break;
+            case 'settings':
+                loadSettings();
+                break;
+        }
+    }, 50);
 
     // Close sidebar on mobile
     if (window.innerWidth <= 768) {
@@ -161,6 +169,7 @@ function handleNavigation(e) {
    // ============================================
 
 async function loadDashboard() {
+    console.log('Loading dashboard...');
     try {
         // Load stats
         const [eventsData, bookingsData, menuData, galleryData] = await Promise.all([
@@ -169,6 +178,8 @@ async function loadDashboard() {
             apiRequest('/menu'),
             apiRequest('/gallery')
         ]);
+
+        console.log('Dashboard data received:', { eventsData, bookingsData, menuData, galleryData });
 
         const activeEvents = eventsData.events ? eventsData.events.filter(e => e.status === 'active').length : 0;
         const pendingBookings = bookingsData.bookings ? bookingsData.bookings.filter(b => b.status === 'pending').length : 0;
@@ -247,8 +258,10 @@ async function loadDashboard() {
    // ============================================
 
 async function loadEvents() {
+    console.log('Loading events...');
     try {
         const data = await apiRequest('/events');
+        console.log('Events data received:', data);
         const events = data.events || [];
         const eventsTable = document.getElementById('events-table-body');
 
@@ -276,6 +289,7 @@ async function loadEvents() {
                 </td>
             </tr>
         `).join('');
+        console.log('Events loaded successfully');
     } catch (error) {
         console.error('Error loading events:', error);
         showToast('Error loading events', 'error');
@@ -367,8 +381,10 @@ async function deleteEvent(id) {
    // ============================================
 
 async function loadBookings() {
+    console.log('Loading bookings...');
     try {
         const data = await apiRequest('/bookings');
+        console.log('Bookings data received:', data);
         const bookings = data.bookings || [];
         const bookingsTable = document.getElementById('bookings-table-body');
 
@@ -398,6 +414,7 @@ async function loadBookings() {
                 </td>
             </tr>
         `).join('');
+        console.log('Bookings loaded successfully');
     } catch (error) {
         console.error('Error loading bookings:', error);
         showToast('Error loading bookings', 'error');
@@ -438,8 +455,10 @@ async function deleteBooking(bookingId) {
    // ============================================
 
 async function loadMenu() {
+    console.log('Loading menu...');
     try {
         const data = await apiRequest('/menu');
+        console.log('Menu data received:', data);
         const menu = data.menu || {};
         const categories = {
             'hot-beverages': { listId: 'hot-beverages-list', icon: 'fa-coffee', title: 'Hot Beverages' },
@@ -475,6 +494,7 @@ async function loadMenu() {
                 </div>
             `).join('');
         }
+        console.log('Menu loaded successfully');
     } catch (error) {
         console.error('Error loading menu:', error);
         showToast('Error loading menu', 'error');
@@ -551,8 +571,10 @@ async function deleteMenuItem(id, category) {
    // ============================================
 
 async function loadGallery() {
+    console.log('Loading gallery...');
     try {
         const data = await apiRequest('/gallery');
+        console.log('Gallery data received:', data);
         const gallery = data.gallery || [];
         const galleryGrid = document.getElementById('admin-gallery-grid');
 
@@ -577,6 +599,7 @@ async function loadGallery() {
                 </div>
             </div>
         `).join('');
+        console.log('Gallery loaded successfully');
     } catch (error) {
         console.error('Error loading gallery:', error);
         showToast('Error loading gallery', 'error');
@@ -627,8 +650,10 @@ async function deleteGalleryImage(id) {
    // ============================================
 
 async function loadSettings() {
+    console.log('Loading settings...');
     try {
         const data = await apiRequest('/settings');
+        console.log('Settings data received:', data);
         const settings = data.settings;
 
         // Contact Information
@@ -646,6 +671,7 @@ async function loadSettings() {
 
         if (openingTime) openingTime.value = settings.openingTime || '11:00';
         if (closingTime) closingTime.value = settings.closingTime || '22:00';
+        console.log('Settings loaded successfully');
     } catch (error) {
         console.error('Error loading settings:', error);
         showToast('Error loading settings', 'error');
