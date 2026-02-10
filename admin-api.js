@@ -104,6 +104,8 @@ function handleNavigation(e) {
     e.preventDefault();
     const targetSection = this.getAttribute('data-section');
 
+    if (!targetSection) return;
+
     // Update active link
     document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
         link.classList.remove('active');
@@ -114,11 +116,17 @@ function handleNavigation(e) {
     document.querySelectorAll('.admin-section').forEach(section => {
         section.classList.remove('active');
     });
-    document.getElementById(targetSection).classList.add('active');
+    const targetElement = document.getElementById(targetSection);
+    if (targetElement) {
+        targetElement.classList.add('active');
+    }
 
     // Update page title
     const sectionTitle = this.textContent.trim();
-    document.getElementById('page-title').textContent = sectionTitle;
+    const pageTitleElement = document.getElementById('page-title');
+    if (pageTitleElement) {
+        pageTitleElement.textContent = sectionTitle;
+    }
 
     // Load section data
     switch(targetSection) {
@@ -162,59 +170,71 @@ async function loadDashboard() {
             apiRequest('/gallery')
         ]);
 
-        const activeEvents = eventsData.events.filter(e => e.status === 'active').length;
-        const pendingBookings = bookingsData.bookings.filter(b => b.status === 'pending').length;
-        const totalMenuItems = Object.values(menuData.menu).flat().length;
-        const totalGalleryImages = galleryData.gallery.length;
+        const activeEvents = eventsData.events ? eventsData.events.filter(e => e.status === 'active').length : 0;
+        const pendingBookings = bookingsData.bookings ? bookingsData.bookings.filter(b => b.status === 'pending').length : 0;
+        const totalMenuItems = menuData.menu ? Object.values(menuData.menu).flat().length : 0;
+        const totalGalleryImages = galleryData.gallery ? galleryData.gallery.length : 0;
 
-        document.getElementById('total-events').textContent = activeEvents;
-        document.getElementById('total-bookings').textContent = bookingsData.bookings.length;
-        document.getElementById('pending-bookings').textContent = pendingBookings;
-        document.getElementById('total-images').textContent = totalGalleryImages;
+        // Update stat elements with safety checks
+        const totalEventsEl = document.getElementById('total-events');
+        const totalBookingsEl = document.getElementById('total-bookings');
+        const pendingBookingsEl = document.getElementById('pending-bookings');
+        const totalImagesEl = document.getElementById('total-images');
+
+        if (totalEventsEl) totalEventsEl.textContent = activeEvents;
+        if (totalBookingsEl) totalBookingsEl.textContent = bookingsData.bookings ? bookingsData.bookings.length : 0;
+        if (pendingBookingsEl) pendingBookingsEl.textContent = pendingBookings;
+        if (totalImagesEl) totalImagesEl.textContent = totalGalleryImages;
 
         // Load recent bookings
-        const recentBookings = bookingsData.bookings.slice(0, 5);
+        const recentBookings = bookingsData.bookings ? bookingsData.bookings.slice(0, 5) : [];
         const recentBookingsList = document.getElementById('recent-bookings-list');
 
-        if (recentBookings.length === 0) {
-            recentBookingsList.innerHTML = '<p class="no-data">No recent bookings</p>';
-        } else {
-            recentBookingsList.innerHTML = recentBookings.map(booking => `
-                <div class="booking-item">
-                    <div class="booking-info">
-                        <h4>${booking.name}</h4>
-                        <p><strong>ID:</strong> ${booking.bookingId}</p>
-                        <p><strong>Date:</strong> ${booking.date}</p>
-                        <p><strong>Players:</strong> ${booking.players}</p>
+        if (recentBookingsList) {
+            if (recentBookings.length === 0) {
+                recentBookingsList.innerHTML = '<p class="no-data">No recent bookings</p>';
+            } else {
+                recentBookingsList.innerHTML = recentBookings.map(booking => `
+                    <div class="booking-item">
+                        <div class="booking-info">
+                            <h4>${booking.name}</h4>
+                            <p><strong>ID:</strong> ${booking.bookingId}</p>
+                            <p><strong>Date:</strong> ${booking.date}</p>
+                            <p><strong>Players:</strong> ${booking.players}</p>
+                        </div>
+                        <div class="booking-status">
+                            <span class="status-badge status-${booking.status}">${booking.status}</span>
+                        </div>
                     </div>
-                    <div class="booking-status">
-                        <span class="status-badge status-${booking.status}">${booking.status}</span>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
 
         // Load upcoming events
         const upcomingEvents = eventsData.events
-            .filter(e => e.status === 'active' && new Date(e.date) >= new Date())
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .slice(0, 5);
+            ? eventsData.events
+                .filter(e => e.status === 'active' && new Date(e.date) >= new Date())
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 5)
+            : [];
 
         const upcomingEventsList = document.getElementById('upcoming-events-list');
 
-        if (upcomingEvents.length === 0) {
-            upcomingEventsList.innerHTML = '<p class="no-data">No upcoming events</p>';
-        } else {
-            upcomingEventsList.innerHTML = upcomingEvents.map(event => `
-                <div class="event-item">
-                    <div class="event-info">
-                        <h4>${event.name}</h4>
-                        <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
-                        <p><strong>Registered:</strong> ${event.registered}/${event.capacity}</p>
-                        <p><strong>Price:</strong> ₹${event.price}</p>
+        if (upcomingEventsList) {
+            if (upcomingEvents.length === 0) {
+                upcomingEventsList.innerHTML = '<p class="no-data">No upcoming events</p>';
+            } else {
+                upcomingEventsList.innerHTML = upcomingEvents.map(event => `
+                    <div class="event-item">
+                        <div class="event-info">
+                            <h4>${event.name}</h4>
+                            <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
+                            <p><strong>Registered:</strong> ${event.registered}/${event.capacity}</p>
+                            <p><strong>Price:</strong> ₹${event.price}</p>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
     } catch (error) {
         console.error('Error loading dashboard:', error);
